@@ -6,8 +6,9 @@ import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
 
 void main() async{
-  WidgetsFlutterBinding;
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+  );
   runApp(const MyApp());
 }
 DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       routes: {
         RegistrationScreen.idScreen:(context)=>RegistrationScreen(),
         LoginScreen.idScreen:(context)=>const LoginScreen(),
-        MainScreen.idScreen:(context)=>const LoginScreen(),
+        MainScreen.idScreen:(context)=>const MainScreen(),
 
       },
       debugShowCheckedModeBanner: false,

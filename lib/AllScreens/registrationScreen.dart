@@ -11,37 +11,6 @@ class RegistrationScreen extends StatelessWidget {
   TextEditingController passwordTextEditingController = TextEditingController();
   TextEditingController phoneTextEditingController = TextEditingController();
 
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
-  RegistrationScreen({Key? key}) : super(key: key);
-  void registerNewUser(BuildContext context)async {
-    final firebaseUser = (await _firebaseAuth
-        .createUserWithEmailAndPassword(email: emailTextEditingController.text,
-        password: passwordTextEditingController.text)
-        .catchError((errormsg) {
-      displayToastMessage("Error$errormsg", context);
-    })).user;
-    if(firebaseUser!=null){
-
-      Map userDataMap= {
-        "name" : nameTextEditingController.text.trim(),
-        "email":emailTextEditingController.text.trim(),
-        "phone":phoneTextEditingController.text.trim(),
-      };
-      userRef.child(firebaseUser.uid).set(userDataMap);
-      displayToastMessage("Account created successfully",context);
-      Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
-    }
-    else{
-      displayToastMessage("User not created", context);
-    }
-    }
-
-  //TOAST FUNCTION
-  void displayToastMessage(String message,BuildContext context)
-  {
-    Fluttertoast.showToast(msg: message);
-  }
 
 
 
@@ -197,4 +166,39 @@ class RegistrationScreen extends StatelessWidget {
       ),
     );
   }
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  RegistrationScreen({Key? key}) : super(key: key);
+  void registerNewUser(BuildContext context)async {
+    final  firebaseUser = (await _firebaseAuth
+        .createUserWithEmailAndPassword(email: emailTextEditingController.text,
+        password: passwordTextEditingController.text)
+        .catchError((errormsg) {
+      displayToastMessage("Error$errormsg", context);
+    })).user;
+    if(firebaseUser!=null){
+
+      Map userDataMap= {
+        "name" : nameTextEditingController.text.trim(),
+        "email":emailTextEditingController.text.trim(),
+        "phone":phoneTextEditingController.text.trim(),
+      };
+
+      userRef.child(firebaseUser.uid).set(userDataMap);
+
+      displayToastMessage("Account created successfully",context);
+
+      Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+    }
+    else{
+      displayToastMessage("User not created", context);
+    }
+  }
+
+  //TOAST FUNCTION
+  void displayToastMessage(String message,BuildContext context)
+  {
+    Fluttertoast.showToast(msg: message);
+  }
+
 }
