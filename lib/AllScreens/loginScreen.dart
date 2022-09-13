@@ -1,9 +1,16 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rider_app_apm/main.dart';
+import 'registrationScreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
   static const String idScreen = "login";
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +21,10 @@ class LoginScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.all(40.0),
                 child: Image(
                   image: AssetImage("images/apm_logo.png"),
@@ -25,19 +32,20 @@ class LoginScreen extends StatelessWidget {
                   width: 250,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 2.0,
               ),
-              Text(
-                "Login as User",
+              const Text(
+                "Login User",
                 style: TextStyle(fontSize: 24.0, fontFamily: "Brand Bolt"),
                 textAlign: TextAlign.center,
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: TextField(
+                  controller: emailTextEditingController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(
                       fontSize: 14.0,
@@ -47,14 +55,15 @@ class LoginScreen extends StatelessWidget {
                       fontSize: 10.0,
                     ),
                   ),
-                  style: TextStyle(fontSize: 14.0),
+                  style: const TextStyle(fontSize: 14.0),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: TextField(
+                  controller: passwordTextEditingController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Password",
                     labelStyle: TextStyle(
                       fontSize: 14.0,
@@ -64,16 +73,28 @@ class LoginScreen extends StatelessWidget {
                       fontSize: 10.0,
                     ),
                   ),
-                  style: TextStyle(fontSize: 14.0),
+                  style: const TextStyle(fontSize: 14.0),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
               RaisedButton(
                   color: Colors.blueAccent,
                   textColor: Colors.white,
-                  child: Container(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24.0),
+                  ),
+                  onPressed: () {
+                    if (!emailTextEditingController.text.contains("@")) {
+                      displayToastMessage(
+                          "Email must contain @ symbol", context);
+                    } else if (passwordTextEditingController.text.length < 7) {
+                      displayToastMessage("password is mandatory", context);
+                    }else{
+                    loginAndAuthenticate(context);
+                  }},
+                  child: const SizedBox(
                     height: 50.0,
                     child: Center(
                         child: Text(
@@ -81,22 +102,54 @@ class LoginScreen extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 18.0, fontFamily: "Brand Bold"),
                     )),
-                  ),
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(24.0),
-                  ),
-                  onPressed: () {
-                    print("button pressed");
-                  }),
+                  )),
               FlatButton(
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, RegistrationScreen.idScreen, (route) => false);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, RegistrationScreen.idScreen, (route) => false);
                   },
-                  child: Text("Do not have an account? Register Here"))
+                  child: const Text("Do not have an account? Sign up"))
             ],
           ),
         ),
       ),
     );
+  }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  void loginAndAuthenticate(BuildContext context) async {
+    final firebaseUser = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+                email: emailTextEditingController.text,
+                password: passwordTextEditingController.text)
+            .catchError((errormsg) {
+      displayToastMessage("Error$errormsg", context);
+    }))
+        .user;
+
+    if (firebaseUser != null) {
+      userRef
+          .child(firebaseUser.uid)
+          .once()
+          .then((DatabaseEvent databaseEvent) {
+                if (databaseEvent.snapshot.value != null) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, MainScreen.idScreen, (route) => false);
+                  displayToastMessage("Logged In Sucessfully", context);
+                } else {
+                  _firebaseAuth.signOut();
+                  displayToastMessage(
+                      "No record exist for this account. Please create new account",
+                      context);
+                }
+              });
+    } else {
+      displayToastMessage("Error occurred cannot log In", context);
+    }
+  }
+
+  void displayToastMessage(String message, BuildContext context) {
+    Fluttertoast.showToast(msg: message);
   }
 }

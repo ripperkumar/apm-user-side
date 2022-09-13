@@ -5,13 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-  );
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 DatabaseReference userRef = FirebaseDatabase.instance.ref().child("users");
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -20,18 +21,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Apm rider app',
       theme: ThemeData(
-
         primarySwatch: Colors.blue,
       ),
       initialRoute: LoginScreen.idScreen,
       routes: {
-        RegistrationScreen.idScreen:(context)=>RegistrationScreen(),
-        LoginScreen.idScreen:(context)=>const LoginScreen(),
-        MainScreen.idScreen:(context)=>const MainScreen(),
-
+        RegistrationScreen.idScreen: (context) => RegistrationScreen(),
+        LoginScreen.idScreen: (context) => LoginScreen(),
+        MainScreen.idScreen: (context) =>  MainScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
