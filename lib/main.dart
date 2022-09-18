@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
 
+import 'package:rider_app_apm/AllScreens/userDetail.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -23,11 +25,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: LoginScreen.idScreen,
+      initialRoute: UserDetail.idScreen,
       routes: {
         RegistrationScreen.idScreen: (context) => RegistrationScreen(),
         LoginScreen.idScreen: (context) => LoginScreen(),
-        MainScreen.idScreen: (context) =>  MainScreen(),
+        MainScreen.idScreen: (context) => MainScreen(),
+        UserDetail.idScreen: (context) => UserDetail(),
       },
       debugShowCheckedModeBanner: false,
     );
