@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:rider_app_apm/AllScreens/loginScreen.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/main.dart';
@@ -27,6 +28,13 @@ class _UserDetailState extends State<UserDetail> {
       TextEditingController();
   TextEditingController permaAddressTextEditingController =
       TextEditingController();
+
+  @override
+  void initState() {
+    birthdayTextEditingController.text =
+        ""; //set the initial value of text field
+    super.initState();
+  }
 
   var occupation = [
     'Student',
@@ -128,17 +136,12 @@ class _UserDetailState extends State<UserDetail> {
                           ),
                           style: const TextStyle(fontSize: 14.0),
                         ),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter birthdate";
-                            }
-                            return null;
-                          },
+                        TextField(
                           controller: birthdayTextEditingController,
-                          keyboardType: TextInputType.datetime,
+                          //editing controller of this TextField
                           decoration: const InputDecoration(
-                            labelText: "Birthday ( DD/MM/YYYY)",
+                            labelText: "Date of Birth",
+                            suffixIcon: Icon(Icons.calendar_today),
                             labelStyle: TextStyle(
                               fontSize: 14.0,
                             ),
@@ -148,6 +151,29 @@ class _UserDetailState extends State<UserDetail> {
                             ),
                           ),
                           style: const TextStyle(fontSize: 14.0),
+                          readOnly: true,
+                          //set it true, so that user will not able to edit text
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1950),
+                                //DateTime.now() - not to allow to choose before today.
+                                lastDate: DateTime(2100));
+
+                            if (pickedDate != null) {
+                              print(
+                                  pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                              String formattedDate =
+                                  DateFormat('yyyy-MM-dd').format(pickedDate);
+                              print(
+                                  formattedDate); //formatted date output using intl package =>  2021-03-16
+                              setState(() {
+                                birthdayTextEditingController.text =
+                                    formattedDate; //set output date to TextField value.
+                              });
+                            } else {}
+                          },
                         ),
                         TextFormField(
                           validator: (value) {
@@ -285,7 +311,8 @@ class _UserDetailState extends State<UserDetail> {
                             ),
                             onPressed: () {
                               if (_formkey.currentState!.validate()) {
-                                print("sucessful");
+                                Navigator.pushNamedAndRemoveUntil(context,
+                                    MainScreen.idScreen, (route) => false);
                               }
                             },
                             child: const SizedBox(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rider_app_apm/AllScreens/loginScreen.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
+import 'package:rider_app_apm/AllScreens/userDetail.dart';
 import 'package:rider_app_apm/main.dart';
 
 class RegistrationScreen extends StatelessWidget {
@@ -183,7 +184,7 @@ class RegistrationScreen extends StatelessWidget {
       displayToastMessage("Account created successfully", context);
 
       Navigator.pushNamedAndRemoveUntil(
-          context, MainScreen.idScreen, (route) => false);
+          context, UserDetail.idScreen, (route) => false);
     } else {
       displayToastMessage("User not created", context);
     }
