@@ -1,8 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:rider_app_apm/AllScreens/iceScreen.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rider_app_apm/AllWidgets/progressDialog.dart';
 import 'package:rider_app_apm/main.dart';
 import 'registrationScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -119,11 +121,18 @@ class LoginScreen extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void loginAndAuthenticate(BuildContext context) async {
+
+    showDialog(context: context,barrierDismissible: false, builder:(BuildContext context)
+    {
+      return ProgressDialog(message: "Authenticating, Please wait...",);
+    });
+
     final firebaseUser = (await _firebaseAuth
             .signInWithEmailAndPassword(
                 email: emailTextEditingController.text,
                 password: passwordTextEditingController.text)
             .catchError((errormsg) {
+              Navigator.pop(context);
       displayToastMessage("Error$errormsg", context);
     }))
         .user;
@@ -135,9 +144,10 @@ class LoginScreen extends StatelessWidget {
           .then((DatabaseEvent databaseEvent) {
                 if (databaseEvent.snapshot.value != null) {
                   Navigator.pushNamedAndRemoveUntil(
-                      context, MainScreen.idScreen, (route) => false);
+                      context, IceScreen.idScreen, (route) => false);
                   displayToastMessage("Logged In Sucessfully", context);
                 } else {
+                  Navigator.pop(context);
                   _firebaseAuth.signOut();
                   displayToastMessage(
                       "No record exist for this account. Please create new account",
@@ -145,6 +155,7 @@ class LoginScreen extends StatelessWidget {
                 }
               });
     } else {
+      Navigator.pop(context);
       displayToastMessage("Error occurred cannot log In", context);
     }
   }

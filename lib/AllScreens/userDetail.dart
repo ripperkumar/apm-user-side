@@ -1,13 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:rider_app_apm/AllScreens/loginScreen.dart';
+import 'package:rider_app_apm/AllScreens/iceContactPage.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
-import 'package:rider_app_apm/main.dart';
 
 class UserDetail extends StatefulWidget {
   static const String idScreen = "User detail";
+
+  UserDetail({Key? key}) : super(key: key);
 
   @override
   State<UserDetail> createState() => _UserDetailState();
@@ -77,7 +78,7 @@ class _UserDetailState extends State<UserDetail> {
                   width: 250,
                 ),
               ),
-              Divider(
+              const Divider(
                 color: Colors.grey,
               ),
               const SizedBox(
@@ -162,12 +163,8 @@ class _UserDetailState extends State<UserDetail> {
                                 lastDate: DateTime(2100));
 
                             if (pickedDate != null) {
-                              print(
-                                  pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                               String formattedDate =
                                   DateFormat('yyyy-MM-dd').format(pickedDate);
-                              print(
-                                  formattedDate); //formatted date output using intl package =>  2021-03-16
                               setState(() {
                                 birthdayTextEditingController.text =
                                     formattedDate; //set output date to TextField value.
@@ -312,7 +309,7 @@ class _UserDetailState extends State<UserDetail> {
                             onPressed: () {
                               if (_formkey.currentState!.validate()) {
                                 Navigator.pushNamedAndRemoveUntil(context,
-                                    MainScreen.idScreen, (route) => false);
+                                    IceContacts.idScreen, (route) => false);
                               }
                             },
                             child: const SizedBox(
