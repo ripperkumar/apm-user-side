@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "441391110378",
-    "project_id": "apm-u-f2b2c",
-    "storage_bucket": "apm-u-f2b2c.appspot.com"
+    "project_number": "1094664058270",
+    "project_id": "ambulance-path-maker",
+    "storage_bucket": "ambulance-path-maker.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:441391110378:android:fa248c380dc34296a9df93",
+        "mobilesdk_app_id": "1:1094664058270:android:71fe67c639f3cef054528f",
         "android_client_info": {
-          "package_name": "com.group.riderAppApm"
+          "package_name": "com.example.apm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "441391110378-vbpbu2hfs2spnjtvo03palm8e2c26aa4.apps.googleusercontent.com",
+          "client_id": "1094664058270-flruep0cf33l64lfnnteojskr6ua1gjo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCZ3rITu6Gk6TRCQbD9aNVIGQLiyxpuos0"
+          "current_key": "AIzaSyD4j6oy69AdWolIW53zKfPaoAiv4PHgSNg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "441391110378-vbpbu2hfs2spnjtvo03palm8e2c26aa4.apps.googleusercontent.com",
+              "client_id": "1094664058270-flruep0cf33l64lfnnteojskr6ua1gjo.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
