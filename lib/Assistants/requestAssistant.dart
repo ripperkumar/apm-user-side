@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 class RequestAssistant{
 
-  static Future<dynamic> getRequest(url) async{
-    http.Response response = await http.get(url);
+  static Future<dynamic> getRequest(String url) async{
+    http.Response response = await http.get(Uri.parse(url));
     try{
       if(response.statusCode == 200)
         {
@@ -13,12 +13,12 @@ class RequestAssistant{
         }
       else
         {
-          return "failed ";
+          return "failed";
         }
     }
     catch(e)
     {
-      return "failed.";
+      return "failed";
     }
   }
 }

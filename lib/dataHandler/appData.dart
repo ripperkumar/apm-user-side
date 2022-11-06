@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:rider_app_apm/Models/address.dart';
 
 class AppData extends ChangeNotifier{
-  Address? pickUpLocation;
+  Address? pickUpLocation,dropOffLocation;
 
 
   void updatePickLocationAddress(Address pickUpAddress)
@@ -10,4 +10,10 @@ class AppData extends ChangeNotifier{
   pickUpLocation=pickUpAddress;
   notifyListeners();
 }
+
+  void updateDropOffLocationAddress(Address dropOffAddress)
+  {
+    dropOffLocation=dropOffAddress;
+    notifyListeners();
+  }
 }

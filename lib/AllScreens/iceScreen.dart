@@ -207,8 +207,7 @@ class _IceScreenState extends State<IceScreen> {
                               borderRadius: BorderRadius.circular(14.0),
                             ),
                             onPressed: () {
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, MainScreen.idScreen, (route) => false);
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>MainScreen()));
                             },
                             child: const SizedBox(
                               height: 50.0,
