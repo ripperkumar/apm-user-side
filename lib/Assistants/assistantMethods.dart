@@ -56,4 +56,14 @@ class AssistantMethods
     directionDetails.durationValue=res["routes"][0]["legs"][0]["duration"]["value"];
     return directionDetails;
   }
+
+  static int calculateFare(DirectionDetails directionDetails)
+  {
+    double timeTraveledFare=(directionDetails.durationValue! / 60)*0.20;
+    double distanceTravelFare=(directionDetails.distanceValue! / 1000)*0.20;
+    double totalFareAmount = timeTraveledFare+distanceTravelFare;
+    return totalFareAmount.truncate();
+  }
+
+
 }
