@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +9,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:rider_app_apm/AllScreens/configMaps.dart';
+import 'package:rider_app_apm/AllScreens/loginScreen.dart';
 import 'package:rider_app_apm/AllScreens/searchScreen.dart';
 import 'package:rider_app_apm/AllWidgets/divider.dart';
 import 'package:rider_app_apm/AllWidgets/progressDialog.dart';
@@ -42,39 +46,81 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   double searchContainerHeight = 300.0;
 
   double rideDetailsContainerHeight = 0;
-  double requestrideContainerHeight = 0;
+  double requestRideContainerHeight = 0;
 
   bool drawerOpen = true;
-   void displayRequestRideContainer(){
-     setState(() {
-      requestrideContainerHeight=250.0;
-      rideDetailsContainerHeight=0;
+
+  DatabaseReference? rideRequestRef;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AssistantMethods.getCurrentOnlineUserInfo();
+  }
+
+  void saveRideRequest() {
+    rideRequestRef =
+        FirebaseDatabase.instance.ref().child("Ride Request").push();
+    var pickUp = Provider.of<AppData>(context, listen: false).pickUpLocation;
+    var dropOff = Provider.of<AppData>(context, listen: false).dropOffLocation;
+    Map pickUpLocMap = {
+      "latitude": pickUp!.latitude.toString(),
+      "longitude": pickUp.longitude.toString(),
+    };
+    Map dropOffLocMap = {
+      "latitude": dropOff!.latitude.toString(),
+      "longitude": dropOff.longitude.toString(),
+    };
+
+    Map rideinfoMap = {
+      "driver_id": "waiting",
+      "pickup": pickUpLocMap,
+      "dropoff": dropOffLocMap,
+      "created_at": DateTime.now().toString(),
+      "rider_name": userCurrentInfo!.name,
+      "rider_phone": userCurrentInfo!.phone,
+      "pickup_address": pickUp.placeName,
+      "dropOff_address": dropOff.placeName,
+    };
+    rideRequestRef!.set(rideinfoMap);
+  }
+
+  void cancelRideRequest() {
+    rideRequestRef!.remove();
+  }
+
+  void displayRequestRideContainer() {
+    setState(() {
+      requestRideContainerHeight = 250.0;
+      rideDetailsContainerHeight = 0;
       bottomPaddingofmap = 230.0;
-      drawerOpen=true;
-     });
+      drawerOpen = true;
+    });
+    saveRideRequest();
+  }
 
-   }
-  resetApp(){
-  setState(() {
-    drawerOpen=true;
-    searchContainerHeight = 300.0;
-    rideDetailsContainerHeight = 0.0;
-    bottomPaddingofmap = 230.0;
-    polyLineSet.clear();
-    markerSet.clear();
-    circlesSet.clear();
-    pLineCoordinates.clear();
-  });
-  locatePosition();
+  resetApp() {
+    setState(() {
+      drawerOpen = true;
+      searchContainerHeight = 300.0;
+      rideDetailsContainerHeight = 0.0;
+      requestRideContainerHeight = 0;
+      bottomPaddingofmap = 230.0;
+      polyLineSet.clear();
+      markerSet.clear();
+      circlesSet.clear();
+      pLineCoordinates.clear();
+    });
+    locatePosition();
+  }
 
-}
   void displayRideDetailsContainer() async {
     await getPlaceDirection();
     setState(() {
       searchContainerHeight = 0;
       rideDetailsContainerHeight = 240.0;
       bottomPaddingofmap = 230.0;
-      drawerOpen=false;
+      drawerOpen = false;
     });
   }
 
@@ -163,6 +209,21 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   style: TextStyle(fontSize: 15.0),
                 ),
               ),
+
+              GestureDetector(
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, LoginScreen.idScreen, (route) => false);
+                },
+                child: const ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text(
+                    "Log out",
+                    style: TextStyle(fontSize: 15.0),
+                  ),
+                ),
+              ),
               const ListTile(
                 leading: Icon(Icons.info),
                 title: Text(
@@ -204,14 +265,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             left: 22.0,
             child: GestureDetector(
               onTap: () {
-                if(drawerOpen){
-
+                if (drawerOpen) {
                   scaffoldkey.currentState?.openDrawer();
+                } else {
+                  resetApp();
                 }
-                else{
-                   resetApp();
-                }
-
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -226,7 +284,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                child:  CircleAvatar(
+                child: CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 20.0,
                   child: Icon(
@@ -357,7 +415,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     children: [
                       Container(
                         width: double.infinity,
-                        color: Colors.tealAccent[100],
+                        color: Colors.blueGrey[100],
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
@@ -393,7 +451,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                                 child: Container(
                                   child: Text(
                                     ((tripDirectionDetails != null)
-                                            ? '\$${AssistantMethods.calculateFare(tripDirectionDetails!)}'
+                                            ? "" //'\$${AssistantMethods.calculateFare(tripDirectionDetails!)}'
                                             : '')
                                         .toString(),
                                     style: TextStyle(fontFamily: "Brand-Bold"),
@@ -411,23 +469,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                         padding: EdgeInsets.symmetric(horizontal: 20.0),
                         child: Row(
                           children: [
-                            Icon(
-                              FontAwesomeIcons.moneyCheck,
-                              size: 18.0,
-                              color: Colors.black54,
-                            ),
-                            SizedBox(
-                              width: 16.0,
-                            ),
-                            Text("cash"),
+
                             SizedBox(
                               width: 6.0,
                             ),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Colors.black54,
-                              size: 16.0,
-                            ),
+
                           ],
                         ),
                       ),
@@ -474,60 +520,80 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             right: 0.0,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft:Radius.circular(16.0),topRight:Radius.circular(16.0),),
-                color:Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    spreadRadius: 0.5,
-                    blurRadius: 16.0,
-                    color: Colors.black54,
-                    offset: Offset(0.7,0.7),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0),
                   ),
-                ]
-              ),
-              height: requestrideContainerHeight,
-              child:Padding(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      spreadRadius: 0.5,
+                      blurRadius: 16.0,
+                      color: Colors.black54,
+                      offset: Offset(0.7, 0.7),
+                    ),
+                  ]),
+              height: requestRideContainerHeight,
+              child: Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: Column(
                   children: [
-                    SizedBox(height: 12.0,),
-                    SizedBox(width: double.infinity,
+                    SizedBox(
+                      width: double.infinity,
                       child: DefaultTextStyle(
                         style: const TextStyle(
-                          fontSize: 55.0,
-                          fontFamily: 'Agne',
-                        ),
-                        child: AnimatedTextKit(
-                          animatedTexts: [
-                            TypewriterAnimatedText('Requesting Ambulance'),
-                            TypewriterAnimatedText('please wait....'),
-                          ],
-                          onTap: () {
-                            print("Tap Event");
-                          },
+                            fontSize: 35.0,
+                            fontFamily: 'Agne',
+                            color: Colors.blueGrey),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 50),
+                          child: AnimatedTextKit(
+                            animatedTexts: [
+                              TypewriterAnimatedText('please wait....'),
+                            ],
+                            onTap: () {
+                              print("Tap Event");
+                            },
+                          ),
                         ),
                       ),
-
                     ),
-                    SizedBox(height: 22.0,),
-                    Container(
-                      height:60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:BorderRadius.circular(26.0),
-                        border: Border.all(width: 2.0,color:Colors.grey),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        cancelRideRequest();
+                        resetApp();
+                      },
+                      child: Container(
+                        height: 60.0,
+                        width: 60.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(26.0),
+                          border: Border.all(width: 2.0, color: Colors.grey),
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 26.0,
+                        ),
                       ),
-                      child:Icon(Icons.close,size: 26.0,) ,
                     ),
-                    SizedBox(height: 22.0,),
+                    SizedBox(
+                      height: 15.0,
+                    ),
                     Container(
                       width: double.infinity,
-                      child: Text("Cancel Rider",textAlign:TextAlign.center,style:TextStyle(fontSize: 12.0),),
+                      child: Text(
+                        "Cancel Rider",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12.0),
+                      ),
                     )
                   ],
                 ),
-              ) ,
+              ),
             ),
           ),
         ],

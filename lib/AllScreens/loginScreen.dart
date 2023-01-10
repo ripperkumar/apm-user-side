@@ -30,8 +30,8 @@ class LoginScreen extends StatelessWidget {
                 padding: EdgeInsets.all(40.0),
                 child: Image(
                   image: AssetImage("images/apm_logo.png"),
-                  height: 200,
-                  width: 250,
+                  height: 150,
+                  width: 150,
                 ),
               ),
               const SizedBox(

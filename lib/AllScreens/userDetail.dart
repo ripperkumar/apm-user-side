@@ -1,9 +1,13 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:rider_app_apm/AllScreens/iceContactPage.dart';
-import 'package:rider_app_apm/AllScreens/mainscreen.dart';
+import 'package:rider_app_apm/AllScreens/addICE_contacts.dart';
+import 'package:rider_app_apm/AllScreens/multi_ice_contact_form_widget.dart';
+import 'package:rider_app_apm/Assistants/assistantMethods.dart';
+import '../main.dart';
+import 'configMaps.dart';
 
 class UserDetail extends StatefulWidget {
   static const String idScreen = "User detail";
@@ -15,8 +19,6 @@ class UserDetail extends StatefulWidget {
 }
 
 class _UserDetailState extends State<UserDetail> {
-  TextEditingController nameTextEditingController = TextEditingController();
-
   TextEditingController bloodTextEditingController = TextEditingController();
 
   TextEditingController birthdayTextEditingController = TextEditingController();
@@ -29,7 +31,6 @@ class _UserDetailState extends State<UserDetail> {
       TextEditingController();
   TextEditingController permaAddressTextEditingController =
       TextEditingController();
-
   @override
   void initState() {
     birthdayTextEditingController.text =
@@ -74,8 +75,8 @@ class _UserDetailState extends State<UserDetail> {
                 padding: EdgeInsets.all(10.0),
                 child: Image(
                   image: AssetImage("images/apm_logo.png"),
-                  height: 100,
-                  width: 250,
+                  height: 75,
+                  width: 100,
                 ),
               ),
               const Divider(
@@ -95,27 +96,6 @@ class _UserDetailState extends State<UserDetail> {
                     key: _formkey,
                     child: Column(
                       children: [
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter your full name";
-                            }
-                            return null;
-                          },
-                          controller: nameTextEditingController,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            labelText: "Name",
-                            labelStyle: TextStyle(
-                              fontSize: 14.0,
-                            ),
-                            hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 10.0,
-                            ),
-                          ),
-                          style: const TextStyle(fontSize: 14.0),
-                        ),
                         TextFormField(
                           controller: bloodTextEditingController,
                           keyboardType: TextInputType.text,
@@ -175,7 +155,7 @@ class _UserDetailState extends State<UserDetail> {
                         TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please enter phono no.";
+                              return "Please enter phone no.";
                             }
                             return null;
                           },
@@ -308,8 +288,28 @@ class _UserDetailState extends State<UserDetail> {
                             ),
                             onPressed: () {
                               if (_formkey.currentState!.validate()) {
+                                firebaseUser = FirebaseAuth.instance.currentUser;
+                                userRef.child(firebaseUser!.uid).update({
+                                  "blood group": bloodTextEditingController.text
+                                      .trim(),
+
+                                  "birthday": birthdayTextEditingController.text
+                                      .trim(),
+
+                                  "phone no": phoneTextEditingController.text
+                                      .trim(),
+
+                                  "alternate phone no": alterPhoneTextEditingController
+                                      .text.trim(),
+                                  "temp address": tempAddressTextEditingController
+                                      .text.trim(),
+                                  "permanent address": permaAddressTextEditingController
+                                      .text.trim(),
+                                  "occupation": occupationDropDown,
+                                  "mode of transport": modeofTransportDropDown,
+                                });
                                 Navigator.pushNamedAndRemoveUntil(context,
-                                    IceContacts.idScreen, (route) => false);
+                                    MultiContactFormWidget.idScreen, (route) => false);
                               }
                             },
                             child: const SizedBox(

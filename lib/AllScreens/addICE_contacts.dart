@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'contact_model.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'ice_contact_model.dart';
 
 class ContactFormItemWidget extends StatefulWidget {
+
   ContactFormItemWidget(
       {Key? key, this.contactModel, this.onRemove, this.index})
       : super(key: key);
@@ -9,17 +11,17 @@ class ContactFormItemWidget extends StatefulWidget {
   final index;
   ContactModel? contactModel;
   final Function? onRemove;
-  final state = _ContactFormItemWidgetState();
+
 
   @override
   State<StatefulWidget> createState() {
-    return state;
+    return _ContactFormItemWidgetState();
   }
 
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phonenumberController = TextEditingController();
 
-  bool isValidated() => state.validate();
+  bool isValidated() => _ContactFormItemWidgetState().validate();
 }
 
 class _ContactFormItemWidgetState extends State<ContactFormItemWidget> {
@@ -97,19 +99,6 @@ class _ContactFormItemWidgetState extends State<ContactFormItemWidget> {
                     ),
                   ],
                 ),
-                // TextFormField(
-                //   controller: widget._relationshipController,
-                //   onChanged: (value) => widget.contactModel!.phone_number = value,
-                //   onSaved: (value) => widget.contactModel!.name = value,
-                //   validator: (value) =>
-                //   value!.length > 3 ? null : "Number is Not Valid",
-                //   decoration: InputDecoration(
-                //     contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                //     border: OutlineInputBorder(),
-                //     hintText: "Enter Number",
-                //     labelText: "relationship",
-                //   ),
-                // ),
                 DropdownButton(
                   isExpanded: true,
                   value: relation,
@@ -154,7 +143,7 @@ class _ContactFormItemWidgetState extends State<ContactFormItemWidget> {
                   controller: widget._phonenumberController,
                   onChanged: (value) => widget.contactModel!.phone_number = value,
                   onSaved: (value) => widget.contactModel!.phone_number = value,
-                  validator: (value)=>value!.length>9?null:"Phone number is not valid",
+                  validator: (value)=>value!.length>6 ?null:"Phone number is not valid",
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 12),
                     border: OutlineInputBorder(),
@@ -170,10 +159,24 @@ class _ContactFormItemWidgetState extends State<ContactFormItemWidget> {
     );
   }
 
+  // bool validate() {
+  //   final form = formKey.currentState;
+  //   if (form == null) {
+  //     return false;
+  //   }
+  //
+  //   form.save();
+  //   return form.validate();
+  // }
+
   bool validate() {
-    //Validate Form Fields
+    //Validate Form Fields by form key
     bool validate = formKey.currentState!.validate();
     if (validate) formKey.currentState!.save();
     return validate;
+  }
+
+  void displayToastMessage(String message, BuildContext context) {
+    Fluttertoast.showToast(msg: message);
   }
 }

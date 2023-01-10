@@ -1,9 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'contact_form_item_widget.dart';
-import 'contact_model.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:rider_app_apm/AllScreens/configMaps.dart';
+import 'package:rider_app_apm/AllScreens/mainscreen.dart';
+import 'package:rider_app_apm/main.dart';
+import 'addICE_contacts.dart';
+import 'ice_contact_model.dart';
 
 class MultiContactFormWidget extends StatefulWidget {
+  static const String idScreen = "Add Ice Contacts";
+
   @override
   State<StatefulWidget> createState() {
     return _MultiContactFormWidgetState();
@@ -25,6 +32,7 @@ class _MultiContactFormWidgetState extends State<MultiContactFormWidget> {
           color: Theme.of(context).primaryColor,
           onPressed: () {
             onSave();
+
           },
           child: Text("Save"),
         ),
@@ -42,31 +50,33 @@ class _MultiContactFormWidgetState extends State<MultiContactFormWidget> {
           itemBuilder: (_, index) {
             return contactForms[index];
           })
-          : Center(child: Text("Tap on + to Add Contact, atleast 4 ICEs")),
+          : Center(
+          child: Text("Tap on + to Add Contact, atleast 4 ICEs")),
     );
   }
 
+
   onSave() {
     bool allValid = true;
-    if(contactForms.length<4)
-      {
-        print("atleast 4 contacts are required");
-      }
-    else{
-      contactForms
-          .forEach((element) => allValid = (allValid && element.isValidated()));
 
-      if (allValid) {
-        List<String?> names =
-        contactForms.map((e) => e.contactModel!.name).toList();
-        debugPrint("$names");
-      } else {
-        debugPrint("Form is Not Valid");
-      }
+    //If any form validation function returns false means all forms are not valid
+    contactForms
+        .forEach((element) => allValid = (allValid && element.isValidated()));
+    if(contactForms.length < 4) {
+      displayToastMessage("please enter ${4-contactForms.length} more contacts", context);
     }
-
+    else if (allValid) {
+      firebaseUser = FirebaseAuth.instance.currentUser;
+      userRef.child(firebaseUser!.uid).update({
+        "ICE contacts": contactForms
+      });
+      Navigator.pushNamedAndRemoveUntil(context,
+          MainScreen.idScreen, (route) => false);
+    }
+    else {
+      debugPrint("Form is Not Valid");
+    }
   }
-
   //Delete specific form
   onRemove(ContactModel contact) {
     setState(() {
@@ -87,5 +97,9 @@ class _MultiContactFormWidgetState extends State<MultiContactFormWidget> {
         onRemove: () => onRemove(_contactModel),
       ));
     });
+  }
+
+  void displayToastMessage(String message, BuildContext context) {
+    Fluttertoast.showToast(msg: message);
   }
 }

@@ -86,7 +86,7 @@ class _IceScreenState extends State<IceScreen> {
               const SizedBox(
                 height: 1.0,
               ),
-              
+
               const Divider(
                 color: Colors.blue,
                 thickness: 2.0,

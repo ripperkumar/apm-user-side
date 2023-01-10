@@ -11,7 +11,6 @@ class RegistrationScreen extends StatelessWidget {
   TextEditingController nameTextEditingController = TextEditingController();
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
-  TextEditingController phoneTextEditingController = TextEditingController();
 
   static const String idScreen = "register";
   @override
@@ -30,8 +29,8 @@ class RegistrationScreen extends StatelessWidget {
                 padding: EdgeInsets.all(40.0),
                 child: Image(
                   image: AssetImage("images/apm_logo.png"),
-                  height: 200,
-                  width: 250,
+                  height: 100,
+                  width: 100,
                 ),
               ),
               const SizedBox(
@@ -78,24 +77,7 @@ class RegistrationScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 14.0),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: phoneTextEditingController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: "Phone",
-                    labelStyle: TextStyle(
-                      fontSize: 14.0,
-                    ),
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 10.0,
-                    ),
-                  ),
-                  style: const TextStyle(fontSize: 14.0),
-                ),
-              ),
+
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
@@ -130,8 +112,7 @@ class RegistrationScreen extends StatelessWidget {
                     } else if (!emailTextEditingController.text.contains("@")) {
                       displayToastMessage(
                           "Email must contain @ symbol", context);
-                    } else if (phoneTextEditingController.text.isEmpty) {
-                      displayToastMessage("Phone number is required", context);
+
                     } else if (passwordTextEditingController.text.length < 7) {
                       displayToastMessage(
                           "password must be more than 7 characters", context);
@@ -184,7 +165,6 @@ class RegistrationScreen extends StatelessWidget {
       Map userDataMap = {
         "name": nameTextEditingController.text.trim(),
         "email": emailTextEditingController.text.trim(),
-        "phone": phoneTextEditingController.text.trim(),
       };
 
       userRef.child(firebaseUser.uid).set(userDataMap);

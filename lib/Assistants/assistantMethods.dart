@@ -1,5 +1,8 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rider_app_apm/Models/allUsers.dart';
 import 'package:rider_app_apm/Models/directDetails.dart';
 import 'package:rider_app_apm/dataHandler/appData.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,6 +12,8 @@ import 'package:rider_app_apm/Assistants/requestAssistant.dart';
 import 'package:rider_app_apm/Models/address.dart';
 class AssistantMethods
 {
+
+
   static Future<String> searchCoordinateAddress(Position position,context) async{
     String placeAddress = "";
     var st1,st2,st3,st4;
@@ -65,5 +70,27 @@ class AssistantMethods
     return totalFareAmount.truncate();
   }
 
+  static void getCurrentOnlineUserInfo() async{
+
+    firebaseUser = FirebaseAuth.instance.currentUser;
+    String userId = firebaseUser!.uid;
+     DatabaseReference reference =
+    FirebaseDatabase.instance.ref().child("users").child(userId);
+
+    reference.once().then((event) {
+      final dataSnapshot = event.snapshot;
+      if (dataSnapshot.value != null) {
+        userCurrentInfo = Users.fromSnapshot(dataSnapshot);
+      }
+    });
+
+
+    // final snapshot = await reference.get(); // you should use await on async methods
+    // if (snapshot.value != null) {
+    //   userCurrentInfo = Users.fromSnapshot(snapshot);
+    // }
+
+  }
 
 }
+ 
