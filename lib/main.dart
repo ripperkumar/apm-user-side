@@ -8,7 +8,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:rider_app_apm/AllScreens/mainscreen.dart';
 import 'package:rider_app_apm/AllScreens/multi_ice_contact_form_widget.dart';
 import 'package:rider_app_apm/AllScreens/registrationScreen.dart';
-
 import 'package:rider_app_apm/AllScreens/userDetail.dart';
 import 'package:rider_app_apm/dataHandler/appData.dart';
 
